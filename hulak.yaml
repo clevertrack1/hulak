@@ -1,0 +1,16 @@
+# Sample configuration file for hulak
+# Place this file in $HOME/.hulak/ or in the current directory
+
+# Environment file to use during the call
+env: global
+
+# Debug mode
+debug: false
+
+# Directory paths
+# dir: /path/to/concurrent/directory
+# dirseq: /path/to/sequential/directory
+
+# File paths
+# file: example_file
+# fp: path/to/file.yaml
