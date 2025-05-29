@@ -67,7 +67,7 @@ For more information, visit https://github.com/xaaha/hulak`,
 
 			if !hasFileFlags && !hasDirFlags {
 				utils.PrintWarning("No file or directory specified. Use -file, -fp, -dir, or -dirseq flags.")
-				cmd.Help()
+				_ = cmd.Help()
 				return
 			}
 
@@ -128,7 +128,7 @@ func init() {
 		// It's okay if config file doesn't exist
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
 			// But log other errors
-			fmt.Fprintf(os.Stderr, "Error reading config file: %s\n", err)
+			_, _ = fmt.Fprintf(os.Stderr, "Error reading config file: %s\n", err)
 		}
 	}
 
