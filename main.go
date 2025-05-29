@@ -6,10 +6,6 @@ import (
 )
 
 func main() {
-	// Assign the functions to the variables in the cmd package
-	cmd.InitializeProject = InitializeProject
-	cmd.HandleAPIRequests = HandleAPIRequests
-
 	// Execute the root command
 	cmd.Execute()
 }
