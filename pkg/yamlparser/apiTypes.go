@@ -36,8 +36,8 @@ func (h *HTTPMethodType) ToUpperCase() {
 }
 
 // IsValid enforce HTTPMethodType
-func (m HTTPMethodType) IsValid() bool {
-	upperCasedMethod := HTTPMethodType(strings.ToUpper(string(m)))
+func (h *HTTPMethodType) IsValid() bool {
+	upperCasedMethod := HTTPMethodType(strings.ToUpper(string(*h)))
 	switch upperCasedMethod {
 	case GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS, TRACE, CONNECT:
 		return true
@@ -45,7 +45,7 @@ func (m HTTPMethodType) IsValid() bool {
 	return false
 }
 
-// Struct we need to call request api
+// ApiInfo Struct we need to call request api
 type ApiInfo struct {
 	Body      io.Reader
 	Headers   map[string]string
@@ -103,7 +103,7 @@ func (user *ApiCallFile) IsValid(filePath string) (bool, error) {
 	return true, nil
 }
 
-// Returns ApiInfo object for the User's API request yaml file
+// PrepareStruct Returns ApiInfo object for the User's API request yaml file
 func (user *ApiCallFile) PrepareStruct() (ApiInfo, error) {
 	body, contentType, err := user.Body.EncodeBody()
 	if err != nil {
