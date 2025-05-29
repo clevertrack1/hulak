@@ -98,7 +98,11 @@ func checkYamlFile(filepath string, secretsMap map[string]any) (*bytes.Buffer, e
 	if err := enc.Encode(parsedMap); err != nil {
 		utils.PanicRedAndExit("error encoding data: %v", err)
 	}
-	enc.Close()
+
+	err = enc.Close()
+	if err != nil {
+		utils.PanicRedAndExit("error closing encoder: %v", err)
+	}
 
 	return &buf, nil
 }
