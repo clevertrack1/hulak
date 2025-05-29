@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"os"
 
-	yaml "github.com/goccy/go-yaml"
+	"github.com/goccy/go-yaml"
 	"github.com/xaaha/hulak/pkg/actions"
 	"github.com/xaaha/hulak/pkg/envparser"
 	"github.com/xaaha/hulak/pkg/utils"
