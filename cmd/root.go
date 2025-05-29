@@ -133,10 +133,10 @@ func init() {
 	}
 
 	// Bind flags to viper
-	viper.BindPFlag("env", rootCmd.PersistentFlags().Lookup("env"))
-	viper.BindPFlag("fp", rootCmd.PersistentFlags().Lookup("fp"))
-	viper.BindPFlag("file", rootCmd.PersistentFlags().Lookup("file"))
-	viper.BindPFlag("debug", rootCmd.PersistentFlags().Lookup("debug"))
-	viper.BindPFlag("dir", rootCmd.PersistentFlags().Lookup("dir"))
-	viper.BindPFlag("dirseq", rootCmd.PersistentFlags().Lookup("dirseq"))
+	_ = viper.BindPFlag("env", rootCmd.PersistentFlags().Lookup("env"))
+	_ = viper.BindPFlag("fp", rootCmd.PersistentFlags().Lookup("fp"))
+	_ = viper.BindPFlag("file", rootCmd.PersistentFlags().Lookup("file"))
+	_ = viper.BindPFlag("debug", rootCmd.PersistentFlags().Lookup("debug"))
+	_ = viper.BindPFlag("dir", rootCmd.PersistentFlags().Lookup("dir"))
+	_ = viper.BindPFlag("dirseq", rootCmd.PersistentFlags().Lookup("dirseq"))
 }
