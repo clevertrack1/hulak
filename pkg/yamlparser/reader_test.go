@@ -1,6 +1,7 @@
 package yamlparser
 
 import (
+	"errors"
 	"os"
 	"os/exec"
 	"testing"
@@ -77,7 +78,8 @@ KeyTwo: value2
 				err := cmd.Run()
 
 				// Verify exit code from the subprocess
-				if e, ok := err.(*exec.ExitError); ok && e.ExitCode() == 1 {
+				var e *exec.ExitError
+				if errors.As(err, &e) && e.ExitCode() == 1 {
 					return // Test passes
 				}
 				t.Fatalf("Expected process to exit with code 1, but got %v", err)
@@ -421,7 +423,8 @@ body:
 				cmd.Env = append(os.Environ(), "EXPECT_EXIT=1")
 				err := cmd.Run()
 
-				if e, ok := err.(*exec.ExitError); ok && e.ExitCode() == 1 {
+				var e *exec.ExitError
+				if errors.As(err, &e) && e.ExitCode() == 1 {
 					return // Expected exit, test passes
 				}
 				t.Fatalf("Expected process to exit with code 1, but got %v", err)
