@@ -51,6 +51,7 @@ hulak -env staging -f test_gql
 - [Flags and Subcommands](#flags-and-subcommands)
   - [Flags](#flags)
   - [Subcommands](#subcommands)
+  - [Configuration Options](#configuration-options)
 - [Schema](#schema)
 - [Actions](#actions)
   - [.Key](#key)
@@ -200,6 +201,40 @@ Read more about response in [response documentation](./docs/response.md).
 | `-debug`  | Add debug boolean flag to get the entire request, response, headers, and TLS info about the api request                                                                                                                                                                                                                                                                | `-debug`                         |
 | `-dir`    | Run entire directory concurrently. Only supports (.yaml or .yam) file. All files use the same provided environment                                                                                                                                                                                                                                                     | `-dir path/to/directory/`        |
 | `-dirseq` | Run entire directory one file at a time. Only supports (.yaml or .yam) file. All files use the same provided environment. In nested directory, it is not guranteed that files will run as they appear in the file system. If the order matter, it's recommended to have a directory without nested directories inside it, in which case, files will run alphabetically | `-dirseq path/to/directory/`     |
+
+## Configuration Options
+
+In addition to command-line flags, hulak supports configuration through environment variables and a configuration file. The configuration values are read in the following order of precedence:
+
+1. Command-line flags (highest precedence)
+2. Environment variables (prefixed with `HULAK_`)
+3. Configuration file (`hulak.yaml` in `$HOME/.hulak/` or current directory)
+4. Default values (lowest precedence)
+
+### Environment Variables
+
+You can use environment variables to configure hulak. The environment variables should be prefixed with `HULAK_` and the rest of the name should match the flag name in uppercase.
+
+```bash
+# Examples
+export HULAK_ENV=global
+export HULAK_DEBUG=true
+export HULAK_DIR=/path/to/directory
+```
+
+### Configuration File
+
+You can create a configuration file named `hulak.yaml` in your home directory (`$HOME/.hulak/`) or in the current directory. The configuration file should contain the same keys as the flags, but without the `-` prefix.
+
+```yaml
+# Example hulak.yaml
+env: global
+debug: false
+# dir: /path/to/concurrent/directory
+# dirseq: /path/to/sequential/directory
+# file: example_file
+# fp: path/to/file.yaml
+```
 
 ## Subcommands
 
