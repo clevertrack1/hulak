@@ -1,4 +1,4 @@
-<div align="center">
+<div style="text-align: center">
   <img alt="Hulak Logo" src="./assets/logo.svg" height="140" />
 <br/>
   File based API client for terminal nerds.
