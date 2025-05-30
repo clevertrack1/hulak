@@ -59,7 +59,7 @@ func addDotToTemplate(key string) string {
 	// Create a regex to find pattern {{identifier}} where there's no dot after {{
 	// The regex matches {{ followed by anything except a dot or closing braces,
 	// followed by any characters until }}
-	re := regexp.MustCompile(`\{\{([^.\}][^\}]*)\}\}`)
+	re := regexp.MustCompile(`{{([^.}][^}]*)}}`)
 	// Replace each occurrence with {{. followed by the captured content
 	result := re.ReplaceAllStringFunc(key, func(match string) string {
 		// Extract the content inside {{ }}
