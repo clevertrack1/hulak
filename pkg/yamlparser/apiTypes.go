@@ -31,13 +31,13 @@ const (
 )
 
 // ToUpperCase convert the method to uppercase
-func (h *HTTPMethodType) ToUpperCase() {
-	*h = HTTPMethodType(strings.ToUpper(string(*h)))
+func (httpMethod *HTTPMethodType) ToUpperCase() {
+	*httpMethod = HTTPMethodType(strings.ToUpper(string(*httpMethod)))
 }
 
 // IsValid enforce HTTPMethodType
-func (m HTTPMethodType) IsValid() bool {
-	upperCasedMethod := HTTPMethodType(strings.ToUpper(string(m)))
+func (httpMethod *HTTPMethodType) IsValid() bool {
+	upperCasedMethod := HTTPMethodType(strings.ToUpper(string(*httpMethod)))
 	switch upperCasedMethod {
 	case GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS, TRACE, CONNECT:
 		return true
