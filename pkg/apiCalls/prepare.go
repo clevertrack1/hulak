@@ -28,8 +28,10 @@ func PrepareURL(baseURL string, urlParams map[string]string) string {
 		for key, val := range urlParams {
 			queryParams.Add(key, val)
 		}
+
 		u.RawQuery = queryParams.Encode()
 	}
+
 	return u.String()
 }
 
@@ -42,6 +44,7 @@ func processResponse(
 	reqBody []byte,
 ) CustomResponse {
 	defer resp.Body.Close()
+
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatalf("prepare.go: Error while reading response: %v", err)
@@ -83,9 +86,12 @@ func processResponse(
 
 	// Preparing TLS Info
 	var tlsInfo HTTPInfo
+
 	if resp.TLS != nil {
 		var issuers []string
+
 		var subjects []string
+
 		for _, cert := range resp.TLS.PeerCertificates {
 			issuers = append(issuers, cert.Issuer.String())
 			subjects = append(subjects, cert.Subject.String())
@@ -105,6 +111,7 @@ func processResponse(
 			Protocol: resp.Proto,
 		}
 	}
+
 	return CustomResponse{
 		Request: &RequestInfo{
 			URL:     req.URL.String(),
@@ -156,14 +163,18 @@ func processDirectory(dirPath string) ([]string, error) {
 	// since we save json as responses, examples, and such,
 	// let's not allow json file to be run concurrently
 	fileExtensions := []string{utils.YAML, utils.YML}
+
 	for _, file := range files {
 		fileIsValid := false
+
 		for _, ext := range fileExtensions {
 			if strings.HasSuffix(strings.ToLower(file), ext) {
 				fileIsValid = true
+
 				break
 			}
 		}
+
 		if fileIsValid {
 			result = append(result, file)
 		}
@@ -181,6 +192,7 @@ func ListDirPaths(dir, dirseq string) (DirPath, error) {
 	if err != nil {
 		return result, fmt.Errorf("error processing concurrent directory: %w", err)
 	}
+
 	result.Concurrent = concurrentFiles
 
 	// Process sequential directory
@@ -188,6 +200,7 @@ func ListDirPaths(dir, dirseq string) (DirPath, error) {
 	if err != nil {
 		return result, fmt.Errorf("error processing sequential directory: %w", err)
 	}
+
 	result.Sequential = sequentialFiles
 
 	return result, nil

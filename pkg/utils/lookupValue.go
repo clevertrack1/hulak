@@ -62,6 +62,7 @@ func LookupValue(key string, data map[string]any) (any, error) {
 			if !exists {
 				return "", ColorError(KeyNotFound + segment)
 			}
+
 			current = value
 		}
 
@@ -79,18 +80,22 @@ func structToMap(value any) (map[string]any, bool) {
 	val := reflect.ValueOf(value)
 	if val.Kind() == reflect.Struct {
 		mapData := make(map[string]any)
+
 		valType := val.Type()
 		for i := range val.NumField() {
 			field := valType.Field(i)
 			mapData[field.Name] = val.Field(i).Interface()
 		}
+
 		return mapData, true
 	}
+
 	return nil, false
 }
 
 func parseKeySegments(key, pathSeparator string) []string {
 	var segments []string
+
 	current := strings.Builder{}
 	inBracket := false
 
@@ -100,6 +105,7 @@ func parseKeySegments(key, pathSeparator string) []string {
 			inBracket = true
 		case char == '}':
 			inBracket = false
+
 			segments = append(segments, current.String())
 			current.Reset()
 		case char == rune(pathSeparator[0]) && !inBracket:
@@ -113,6 +119,7 @@ func parseKeySegments(key, pathSeparator string) []string {
 	if current.Len() > 0 {
 		segments = append(segments, current.String())
 	}
+
 	return segments
 }
 
@@ -122,11 +129,14 @@ func ParseArrayKey(segment string) (bool, string, int) {
 		openBracket := strings.LastIndex(segment, "[")
 		closeBracket := strings.LastIndex(segment, "]")
 		indexStr := segment[openBracket+1 : closeBracket]
+
 		index, err := strconv.Atoi(indexStr)
 		if err != nil {
 			return false, segment, -1 // Invalid index
 		}
+
 		return true, segment[:openBracket], index
 	}
+
 	return false, segment, -1
 }

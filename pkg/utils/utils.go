@@ -16,6 +16,7 @@ func CreatePath(filePath string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	finalFilePath := filepath.Join(projectRoot, filePath)
 
 	return finalFilePath, nil
@@ -27,17 +28,21 @@ func SanitizeDirPath(dirPath string) (string, error) {
 	if cleanPath == "" {
 		cleanPath = "."
 	}
+
 	absPath, err := filepath.Abs(cleanPath)
 	if err != nil {
 		return "", fmt.Errorf("error converting to absolute path: %w", err)
 	}
+
 	info, err := os.Stat(absPath)
 	if err != nil {
 		return "", fmt.Errorf("error accessing path %s: %w", dirPath, err)
 	}
+
 	if !info.IsDir() {
 		return "", fmt.Errorf("path is not a directory: %s", dirPath)
 	}
+
 	return absPath, nil
 }
 
@@ -49,16 +54,22 @@ func CreateDir(dirPath string) error {
 		if !info.IsDir() {
 			return fmt.Errorf("path '%s' exists but is a file", dirPath)
 		}
+
 		return nil // Dir already exists
 	}
+
 	if !os.IsNotExist(err) {
 		return err
 	}
+
 	if err := os.Mkdir(dirPath, DirPer); err != nil {
 		PrintRed("Error creating directory " + CrossMark)
+
 		return err
 	}
+
 	PrintGreen("Created directory " + CheckMark)
+
 	return nil
 }
 
@@ -66,22 +77,27 @@ func CreateDir(dirPath string) error {
 // and creates it if it does not exist.
 func CreateFile(filePath string) error {
 	fileName := filepath.Base(filePath)
+
 	info, err := os.Stat(filePath)
 	if os.IsNotExist(err) {
 		file, err := os.Create(filePath)
 		if err != nil {
 			PrintRed(fmt.Sprintf("Error creating '%s': %s", fileName, CrossMark))
+
 			return err
 		}
+
 		defer file.Close()
 		PrintGreen(fmt.Sprintf("Created '%s': %s", fileName, CheckMark))
 	} else if err != nil {
 		PrintRed(fmt.Sprintf("Error checking '%s': %v", fileName, err))
+
 		return err
 	} else {
 		if info.IsDir() {
 			return fmt.Errorf("cannot create file '%s': path is a directory", filePath)
 		}
+
 		if info.Mode().IsRegular() {
 			PrintWarning(fmt.Sprintf("File '%s' already exists.", filePath))
 		}
@@ -98,6 +114,7 @@ func GetEnvFiles() ([]string, error) {
 	if err != nil {
 		return environmentFiles, err
 	}
+
 	contents, err := os.ReadDir(envPath)
 	if err != nil {
 		return environmentFiles, err
@@ -110,6 +127,7 @@ func GetEnvFiles() ([]string, error) {
 			environmentFiles = append(environmentFiles, lowerCasedEnvFromFile)
 		}
 	}
+
 	return environmentFiles, nil
 }
 
@@ -117,12 +135,15 @@ func GetEnvFiles() ([]string, error) {
 // except "variables" as Graphql variables is case-sensitive
 func ConvertKeysToLowerCase(dict map[string]any) map[string]any {
 	loweredMap := make(map[string]any)
+
 	for key, val := range dict {
 		// for graphql variables are case sensitive
 		if key == "variables" {
 			loweredMap[key] = val
+
 			continue
 		}
+
 		lowerKey := strings.ToLower(key)
 		// If val is a map and the key isn't "variables", process it recursively.
 		switch almostFinalValue := val.(type) {
@@ -132,6 +153,7 @@ func ConvertKeysToLowerCase(dict map[string]any) map[string]any {
 			loweredMap[lowerKey] = almostFinalValue
 		}
 	}
+
 	return loweredMap
 }
 
@@ -140,6 +162,7 @@ func ConvertKeysToLowerCase(dict map[string]any) map[string]any {
 func CopyEnvMap(original map[string]any) map[string]any {
 	result := make(map[string]any)
 	maps.Copy(result, original)
+
 	return result
 }
 
@@ -159,12 +182,15 @@ func ListMatchingFiles(matchFile string, initialPath ...string) ([]string, error
 	for _, ext := range fileExtensions {
 		baseName = strings.TrimSuffix(baseName, ext)
 	}
+
 	baseName = strings.ToLower(baseName)
 
 	// Determine the start path
 	startPath := ""
+
 	if len(initialPath) == 0 {
 		var err error
+
 		startPath, err = CreatePath("")
 		if err != nil {
 			return nil, fmt.Errorf("error getting initial file path: %w", err)
@@ -181,14 +207,17 @@ func ListMatchingFiles(matchFile string, initialPath ...string) ([]string, error
 
 	// Filter files by matching base name
 	var result []string
+
 	for _, filePath := range allFiles {
 		fileName := strings.ToLower(filepath.Base(filePath))
 
 		// Check if the file has a supported extension
 		hasMatchingExtension := false
+
 		for _, ext := range fileExtensions {
 			if strings.HasSuffix(fileName, ext) {
 				hasMatchingExtension = true
+
 				break
 			}
 		}
@@ -229,11 +258,13 @@ func MergeMaps(main, sec map[string]string) map[string]string {
 	if main == nil {
 		main = make(map[string]string)
 	}
+
 	if sec == nil {
 		return main
 	}
 	// Merge sec map into main map
 	maps.Copy(main, sec)
+
 	return main
 }
 

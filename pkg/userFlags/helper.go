@@ -37,12 +37,14 @@ func GenerateFilePathList(fileName string, fp string) ([]string, error) {
 	if len(filePathList) == 0 {
 		return nil, utils.ColorError(standardErrMsg)
 	}
+
 	return filePathList, nil
 }
 
 // Helper function to print command usage
 func printHelp() {
 	utils.PrintWarning("Api Usage:")
+
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 4, ' ', 0)
 	writeCommandHelp(w, []*CommandHelp{
 		{"hulak -env global -f fileName", "Find and run all 'fileName'"},
@@ -64,6 +66,7 @@ func printHelp() {
 // helper function to show valid subcommands
 func printHelpSubCommands() {
 	utils.PrintWarning("Subcommands:")
+
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 4, ' ', 0)
 	writeCommandHelp(w, []*CommandHelp{
 		{"hulak version", "Prints hulak version"},

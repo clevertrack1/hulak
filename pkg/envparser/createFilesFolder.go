@@ -18,19 +18,23 @@ func CreateEnvDirAndFiles(fileName string) (string, error) {
 	envDirpath, err := utils.CreatePath(defEnvDir)
 	if err != nil {
 		utils.PrintRed("Error creating filePath")
+
 		return "", err
 	}
 
 	envFilePath := filepath.Join(envDirpath, fileName+defEnvSfx)
+
 	if err = utils.CreateDir(envDirpath); err != nil {
 		return "", err
 	}
+
 	_, err = os.Stat(envFilePath)
 	if os.IsNotExist(err) {
 		if err = utils.CreateFile(envFilePath); err != nil {
 			return "", err
 		}
 	}
+
 	return envFilePath, nil
 }
 
@@ -43,6 +47,8 @@ func CreateDefaultEnvs(envName *string) error {
 		lowerCasedEnv := strings.ToLower(*envName)
 		defEnv = lowerCasedEnv
 	}
+
 	_, err := CreateEnvDirAndFiles(defEnv)
+
 	return err
 }

@@ -35,6 +35,7 @@ func (a *Auth) IsValid() bool {
 		if a.AccessTokenURL == "" || !a.AccessTokenURL.IsValidURL() {
 			return false
 		}
+
 		return true
 	default:
 		// Unsupported type is considered invalid
@@ -50,7 +51,9 @@ func (u URLPARAMS) IsValid() bool {
 	if u == nil {
 		return false
 	}
+
 	_, ok := u["client_id"]
+
 	return ok
 }
 
@@ -83,6 +86,7 @@ func (b *Auth2Body) IsValid() bool {
 // EncodeBody encodes the *Auth2Body
 func (b *Auth2Body) EncodeBody(code string) (io.Reader, string, error) {
 	var body io.Reader
+
 	var contentType string
 
 	if b == nil {
@@ -99,11 +103,12 @@ func (b *Auth2Body) EncodeBody(code string) (io.Reader, string, error) {
 		if err != nil {
 			return nil, "", utils.ColorError("#oAuthTypes.go", err)
 		}
+
 		body, contentType = encodedBody, "application/x-www-form-urlencoded"
 	default:
 		return nil, "", utils.ColorError("no valid body type provided")
-
 	}
+
 	return body, contentType, nil
 }
 
@@ -181,6 +186,7 @@ func (auth2Body *AuthRequestFile) PrepareStruct(code string) (ApiInfo, error) {
 		if auth2Body.Headers == nil {
 			auth2Body.Headers = make(map[string]string)
 		}
+
 		auth2Body.Headers["content-type"] = contentType
 	}
 

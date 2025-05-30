@@ -18,11 +18,13 @@ func StandardCall(apiInfo yamlparser.ApiInfo, debug bool) (CustomResponse, error
 	if apiInfo.Headers == nil {
 		apiInfo.Headers = map[string]string{}
 	}
+
 	method := apiInfo.Method
 	urlStr := apiInfo.Url
 	bodyReader := apiInfo.Body
 
 	var bodyBytes []byte
+
 	var err error
 	if bodyReader != nil {
 		bodyBytes, err = io.ReadAll(bodyReader)
@@ -60,6 +62,7 @@ func StandardCall(apiInfo yamlparser.ApiInfo, debug bool) (CustomResponse, error
 	if err != nil {
 		return CustomResponse{}, err
 	}
+
 	end := time.Now()
 
 	duration := end.Sub(start)
@@ -89,6 +92,7 @@ func SendAndSaveAPIRequest(secretsMap map[string]any, path string, debug bool) e
 	}
 
 	PrintAndSaveFinalResp(resp, path)
+
 	return nil
 }
 
@@ -101,6 +105,7 @@ func PrintAndSaveFinalResp(resp CustomResponse, path string) {
 		strBody = string(jsonData)
 	} else {
 		utils.PrintWarning("call.go: error serializing response: " + err.Error())
+
 		strBody = fmt.Sprintf("%+v", resp) // Fallback to entire response
 	}
 

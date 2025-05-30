@@ -81,6 +81,7 @@ func ListFiles(dirPath string, options ...ListFilesOption) ([]string, error) {
 			for _, ext := range fileExtensions {
 				if strings.HasSuffix(fileName, ext) {
 					result = append(result, path)
+
 					break
 				}
 			}

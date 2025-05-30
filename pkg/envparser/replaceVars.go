@@ -33,11 +33,14 @@ func replaceVariables(
 	if err != nil {
 		return "", err
 	}
+
 	var result bytes.Buffer
+
 	err = tmpl.Execute(&result, secretsMap)
 	if err != nil {
 		return "", err
 	}
+
 	return result.String(), nil
 }
 
@@ -47,6 +50,7 @@ func replaceVariables(
 // Returns a new map with resolved values or an error if any resolution fails.
 func prepareMap(secretsMap map[string]any) (map[string]any, error) {
 	updatedMap := make(map[string]any)
+
 	for key, val := range secretsMap {
 		switch v := val.(type) {
 		case string:
@@ -54,6 +58,7 @@ func prepareMap(secretsMap map[string]any) (map[string]any, error) {
 			if err != nil {
 				return nil, err
 			}
+
 			updatedMap[key] = changedValue
 		case bool, int, float64, nil:
 			updatedMap[key] = v
@@ -61,6 +66,7 @@ func prepareMap(secretsMap map[string]any) (map[string]any, error) {
 			return nil, fmt.Errorf("unsupported type for key '%s': %T", key, val)
 		}
 	}
+
 	return updatedMap, nil
 }
 

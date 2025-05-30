@@ -54,17 +54,21 @@ func HandleSubcommands() error {
 		if err != nil {
 			return fmt.Errorf("\n invalid subcommand %v", err)
 		}
+
 		filePaths := migrate.Args()
+
 		err = migration.CompleteMigration(filePaths)
 		if err != nil {
 			return fmt.Errorf("\n invalid subcommand %v", err)
 		}
+
 		os.Exit(0)
 
 	case Init:
 		if err := handleInit(); err != nil {
 			return err
 		}
+
 		os.Exit(0)
 
 	case Help:
@@ -76,5 +80,6 @@ func HandleSubcommands() error {
 		printHelpSubCommands()
 		os.Exit(1)
 	}
+
 	return nil
 }

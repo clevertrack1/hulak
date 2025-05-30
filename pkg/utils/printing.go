@@ -14,11 +14,13 @@ import (
 // The returned error is colored for console output.
 func ColorError(errMsg string, errs ...error) error {
 	fullMsg := errMsg
+
 	for _, err := range errs {
 		if err != nil {
 			fullMsg += ": " + err.Error()
 		}
 	}
+
 	return fmt.Errorf("\n%sError: %s%s", Red, fullMsg, ColorReset)
 }
 
@@ -58,19 +60,24 @@ func MarshalToJSON(value any) (any, error) {
 	default:
 		if arr, ok := value.([]any); ok {
 			var jsonArray []string
+
 			for _, item := range arr {
 				jsonStr, err := json.Marshal(item)
 				if err != nil {
 					return "", err
 				}
+
 				jsonArray = append(jsonArray, string(jsonStr))
 			}
+
 			return fmt.Sprintf("[%s]", strings.Join(jsonArray, ",")), nil
 		}
+
 		jsonStr, err := json.Marshal(value)
 		if err != nil {
 			return "", err
 		}
+
 		return string(jsonStr), nil
 	}
 }

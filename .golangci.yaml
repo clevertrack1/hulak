@@ -5,7 +5,7 @@ linters:
   enable:
     - dupl
     - gocritic
-    - godot
+ #  - godot
     - inamedparam
   #  - lll
     - nakedret

@@ -37,6 +37,7 @@ func GetValueOf(key, fileName string) any {
 	valuesCacheMutex.RLock()
 	if cache, exists := valuesCache[cacheKey]; exists {
 		valuesCacheMutex.RUnlock()
+
 		return cache.result
 	}
 	valuesCacheMutex.RUnlock()
@@ -89,13 +90,16 @@ func GetFile(filePath string) (string, error) {
 		if os.IsNotExist(err) {
 			// Try relative to working directory if absolute path doesn't exist
 			relPath := filepath.Join(workingDir, cleanPath)
+
 			fileInfo, err = os.Stat(relPath)
 			if err != nil {
 				if os.IsNotExist(err) {
 					return "", fmt.Errorf("file does not exist %s", absPath)
 				}
+
 				return "", fmt.Errorf("error accessing file %s: %w", filePath, err)
 			}
+
 			absPath = relPath
 		} else {
 			return "", fmt.Errorf("error accessing file %s: %w", filePath, err)
@@ -129,6 +133,7 @@ func GetFile(filePath string) (string, error) {
 
 func getFileMutex(filePath string) *sync.Mutex {
 	mutex, _ := fileOpsMutex.LoadOrStore(filePath, &sync.Mutex{})
+
 	return mutex.(*sync.Mutex)
 }
 
@@ -143,10 +148,12 @@ func processValueOf(key, fileName string) any {
 		} else {
 			utils.PrintRed("Provide fileName/path to key for getValueOf action")
 		}
+
 		return ""
 	}
 
 	cleanFileName := filepath.Clean(fileName)
+
 	var jsonResFilePath string
 
 	// Check if the fileName contains path separators or starts with ".."
@@ -161,6 +168,7 @@ func processValueOf(key, fileName string) any {
 				"error resolving absolute path for '%s': %s",
 				fileName, err.Error(),
 			))
+
 			return ""
 		}
 
@@ -181,11 +189,13 @@ func processValueOf(key, fileName string) any {
 				"error occurred while grabbing matching paths for '%s': %s",
 				cleanFileName, err.Error(),
 			))
+
 			return ""
 		}
 
 		if len(yamlPathList) == 0 {
 			utils.PrintRed("could not find matching files " + cleanFileName)
+
 			return ""
 		}
 
@@ -219,6 +229,7 @@ func processValueOf(key, fileName string) any {
 				jsonResFilePath, cleanFileName, jsonResFilePath, key,
 			))
 		}
+
 		return ""
 	}
 
@@ -230,23 +241,27 @@ func processValueOf(key, fileName string) any {
 			filepath.Base(jsonResFilePath),
 			err.Error(),
 		))
+
 		return ""
 	}
 	defer file.Close()
 
 	// First, decode into a generic any
 	var rawContent any
+
 	decoder := json.NewDecoder(file)
 	if err := decoder.Decode(&rawContent); err != nil {
 		utils.PrintRed(
 			"make sure " + filepath.Base(jsonResFilePath) +
 				" has proper json content: " + err.Error(),
 		)
+
 		return ""
 	}
 
 	// Then handle different types
 	var result any
+
 	switch content := rawContent.(type) {
 	case []any:
 		// Handle array case - for root level arrays
@@ -257,6 +272,7 @@ func processValueOf(key, fileName string) any {
 			})
 		} else {
 			utils.PrintRed("JSON content is an array, use [index] notation to access elements")
+
 			return ""
 		}
 	case map[string]any:
@@ -266,6 +282,7 @@ func processValueOf(key, fileName string) any {
 			"unexpected JSON content format in file '%s'",
 			filepath.Base(jsonResFilePath),
 		))
+
 		return ""
 	}
 
@@ -282,6 +299,7 @@ func processValueOf(key, fileName string) any {
 			key,
 		)
 		utils.PrintRed(msg)
+
 		return ""
 	}
 

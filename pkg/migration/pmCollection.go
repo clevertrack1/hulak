@@ -117,6 +117,7 @@ type RawOptions struct {
 func isCollection(jsonString map[string]any) bool {
 	_, infoExists := jsonString["info"]
 	_, itemExists := jsonString["item"]
+
 	return infoExists && itemExists
 }
 
@@ -161,6 +162,7 @@ func saveResponses(item ItemOrReq) []string {
 		for _, header := range response.Header {
 			headers[header.Key] = header.Value
 		}
+
 		if len(headers) > 0 {
 			responseData["headers"] = headers
 		}
@@ -213,6 +215,7 @@ func urlToYaml(pmURL PMURL) (string, error) {
 		URL       string            `yaml:"url"`
 		URLParams map[string]string `yaml:"urlparams,omitempty"`
 	}
+
 	output := YAMLOutput{
 		URLParams: make(map[string]string),
 	}
@@ -291,6 +294,7 @@ func bodyToYaml(pmbody Body) (string, error) {
 			for _, pair := range pmbody.URLEncoded {
 				urlEncodedMap[addDotToTemplate(pair.Key)] = addDotToTemplate(pair.Value)
 			}
+
 			yamlOutput["urlencodedformdata"] = urlEncodedMap
 		}
 
@@ -300,6 +304,7 @@ func bodyToYaml(pmbody Body) (string, error) {
 			for _, pair := range pmbody.FormData {
 				formDataMap[addDotToTemplate(pair.Key)] = addDotToTemplate(pair.Value)
 			}
+
 			yamlOutput["formdata"] = formDataMap
 		}
 
@@ -310,6 +315,7 @@ func bodyToYaml(pmbody Body) (string, error) {
 
 			if len(pmbody.GraphQL.Variables) > 0 {
 				variables := make(map[string]any)
+
 				gqlVarmap := createMap(pmbody.GraphQL.Variables)
 				for key, value := range gqlVarmap {
 					if strValue, ok := value.(string); ok {
@@ -318,6 +324,7 @@ func bodyToYaml(pmbody Body) (string, error) {
 						variables[key] = value
 					}
 				}
+
 				graphql["variables"] = variables
 			}
 
@@ -352,6 +359,7 @@ func forEachRequest(collection PmCollection, parentDirPath string) error {
 	collectionVars := prepareVarStr(collection)
 	if err := migrateEnv(collectionVars, collection.Info.Name); err != nil {
 		utils.PrintRed("Error occurred while migrating Collection Variables")
+
 		return err
 	}
 
@@ -403,8 +411,10 @@ func processItems(items []ItemOrReq, parentDirPath string) error {
 
 			// Convert body to YAML if it exists
 			var bodyYAML string
+
 			if item.Request.Body != nil {
 				var err error
+
 				bodyYAML, err = bodyToYaml(*item.Request.Body)
 				if err != nil {
 					return fmt.Errorf("failed to convert body for request '%s': %w", item.Name, err)
@@ -417,6 +427,7 @@ func processItems(items []ItemOrReq, parentDirPath string) error {
 				// Create filename based on request name and response index
 				sanitizedName := strings.ReplaceAll(strings.ToLower(item.Name), " ", "_")
 				filename := fmt.Sprintf("%s_example_%d.json", sanitizedName, i+1)
+
 				responseFilePath := filepath.Join(itemDirPath, filename)
 				if err := os.WriteFile(responseFilePath, []byte(response), os.ModePerm); err != nil {
 					return fmt.Errorf(
@@ -429,6 +440,7 @@ func processItems(items []ItemOrReq, parentDirPath string) error {
 
 			// Build request YAML
 			requestYAML := fmt.Sprintf("---\n# Request: %s\n", item.Name)
+
 			if item.Description != "" {
 				descriptionFilePath := filepath.Join(itemDirPath, "description.txt")
 				if err := os.WriteFile(descriptionFilePath, []byte(item.Description), os.ModePerm); err != nil {
@@ -438,6 +450,7 @@ func processItems(items []ItemOrReq, parentDirPath string) error {
 						err,
 					)
 				}
+
 				requestYAML += fmt.Sprintf("# Description: %s\n", item.Description)
 			}
 
@@ -461,10 +474,12 @@ func processItems(items []ItemOrReq, parentDirPath string) error {
 
 			// Write each request YAML
 			reqFileName := sanitizeKey(item.Name) + utils.YAML
+
 			if item.Name == "" {
 				counter++
 				reqFileName = fmt.Sprintf("request_%v", counter) + utils.YAML
 			}
+
 			reqFilePath := filepath.Join(itemDirPath, reqFileName)
 
 			if err = os.WriteFile(reqFilePath, []byte(requestYAML), utils.FilePer); err != nil {
@@ -490,6 +505,7 @@ func migrateCollection(jsonStr map[string]any) error {
 
 	// create dir path
 	primaryDir := sanitizeKey(collection.Info.Name)
+
 	dirPath, err := utils.CreatePath(primaryDir)
 	if err != nil {
 		return err
@@ -512,5 +528,6 @@ func migrateCollection(jsonStr map[string]any) error {
 	}
 
 	utils.PrintGreen("Collection Migration Successful! " + utils.CheckMark)
+
 	return nil
 }

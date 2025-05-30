@@ -27,6 +27,7 @@ const (
 // copied from Github https://gist.github.com/sevkin/9798d67b2cb9d07cb05f89f14ba682f8?permalink_comment_id=5084817#gistcomment-5084817
 func OpenURL(url string) error {
 	var cmd string
+
 	var args []string
 
 	switch runtime.GOOS {
@@ -48,10 +49,12 @@ func OpenURL(url string) error {
 			args = []string{url}
 		}
 	}
+
 	if len(args) > 1 {
 		// args[0] is used for 'start' command argument, to prevent issues with URLs starting with a quote
 		args = append(args[:1], append([]string{""}, args[1:]...)...)
 	}
+
 	return exec.Command(cmd, args...).Start()
 }
 
@@ -75,6 +78,7 @@ func callback(w http.ResponseWriter, r *http.Request) {
 func server() {
 	// log.Println("Starting server on port", portNum)
 	http.HandleFunc("/callback", callback)
+
 	err := http.ListenAndServe(portNum, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -102,6 +106,7 @@ func openBrowserAndGetCode(filePath string, secretsMap map[string]any) (string, 
 
 	// Open the browser
 	log.Println("Opening browser for authentication...")
+
 	if err := OpenURL(urlStr); err != nil {
 		return "", utils.ColorError("error opening browser: %w", err)
 	}
@@ -131,11 +136,14 @@ func SendAPIRequestForAuth2(secretsMap map[string]any, filePath string, debug bo
 	if err != nil {
 		return err
 	}
+
 	resp, err := apicalls.StandardCall(apiInfo, debug)
 	if err != nil {
 		return err
 	}
+
 	apicalls.PrintAndSaveFinalResp(resp, filePath)
+
 	return nil
 }
 
@@ -145,5 +153,6 @@ func isWSL() bool {
 	if err != nil {
 		return false
 	}
+
 	return strings.Contains(strings.ToLower(string(releaseData)), "microsoft")
 }

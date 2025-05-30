@@ -32,6 +32,7 @@ func replaceVarsWithValues(
 			if err != nil {
 				utils.PrintRed(err.Error())
 			}
+
 			if replacedValue, ok := secretsMap[valTyped]; ok {
 				changedMap[key] = replacedValue
 			} else {
@@ -39,22 +40,26 @@ func replaceVarsWithValues(
 			}
 		case map[string]string:
 			innerMap := make(map[string]any)
+
 			for k, v := range valTyped {
 				finalChangedValue, err := envparser.SubstituteVariables(v, secretsMap)
 				if err != nil {
 					utils.PrintRed(err.Error())
 				}
+
 				if replacedValue, ok := secretsMap[v]; ok {
 					innerMap[k] = replacedValue
 				} else {
 					innerMap[k] = finalChangedValue
 				}
 			}
+
 			changedMap[key] = innerMap
 		default:
 			changedMap[key] = val
 		}
 	}
+
 	return changedMap
 }
 
@@ -76,6 +81,7 @@ func checkYamlFile(filepath string, secretsMap map[string]any) (*bytes.Buffer, e
 	}
 
 	var data map[string]any
+
 	dec := yaml.NewDecoder(file)
 	if err = dec.Decode(&data); err != nil {
 		utils.PanicRedAndExit("1. error decoding data: %v", err)
@@ -94,10 +100,12 @@ func checkYamlFile(filepath string, secretsMap map[string]any) (*bytes.Buffer, e
 	}
 
 	var buf bytes.Buffer
+
 	enc := yaml.NewEncoder(&buf)
 	if err := enc.Encode(parsedMap); err != nil {
 		utils.PanicRedAndExit("error encoding data: %v", err)
 	}
+
 	enc.Close()
 
 	return &buf, nil
@@ -113,6 +121,7 @@ func FinalStructForAPI(filePath string, secretsMap map[string]any) (ApiCallFile,
 	}
 
 	var file ApiCallFile
+
 	dec := yaml.NewDecoder(buf)
 	if err := dec.Decode(&file); err != nil {
 		return ApiCallFile{}, false, err
@@ -137,6 +146,7 @@ func FinalStructForOAuth2(
 	}
 
 	var auth2Config AuthRequestFile
+
 	dec := yaml.NewDecoder(buf)
 	if err := dec.Decode(&auth2Config); err != nil {
 		return AuthRequestFile{}, utils.ColorError("Error decoding data: %v", err)
@@ -145,5 +155,6 @@ func FinalStructForOAuth2(
 	if valid, err := auth2Config.IsValid(); !valid {
 		return AuthRequestFile{}, utils.ColorError("Error on Auth2 Request Body %v", err)
 	}
+
 	return auth2Config, nil
 }

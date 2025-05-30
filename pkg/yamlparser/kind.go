@@ -53,6 +53,7 @@ func (kc *KindConfig) GetValidKinds() []Kind {
 	for _, k := range kc.validKinds {
 		kinds = append(kinds, k)
 	}
+
 	return kinds
 }
 
@@ -71,6 +72,7 @@ func (k *Kind) normalize() Kind {
 	if canonical, exists := kindConfig.validKinds[normalized]; exists {
 		return canonical
 	}
+
 	return Kind(normalized)
 }
 
@@ -83,6 +85,7 @@ func (conf *ConfigType) IsValid() bool {
 
 	normalized := strings.ToLower(string(conf.GetKind()))
 	_, exists := kindConfig.validKinds[normalized]
+
 	return exists
 }
 
@@ -109,6 +112,7 @@ func (conf *ConfigType) IsAPI() bool {
 // ValidateKinds checks if all kinds in the slice are valid
 func ValidateKinds(kinds []Kind) ([]string, bool) {
 	var invalidKinds []string
+
 	isValid := true
 
 	for _, kind := range kinds {
@@ -130,6 +134,7 @@ func ParseConfig(filePath string, secretsMap map[string]any) (*ConfigType, error
 	}
 
 	var config ConfigType
+
 	dec := yaml.NewDecoder(buf)
 	if err := dec.Decode(&config); err != nil {
 		return nil, utils.ColorError("error decoding YAML: %w", err)
@@ -144,5 +149,6 @@ func MustParseConfig(filePath string, secretsMap map[string]any) ConfigType {
 	if err != nil {
 		utils.PanicRedAndExit("#kind.go: %v", err)
 	}
+
 	return *config
 }

@@ -11,6 +11,7 @@ import (
 
 func handleInit() error {
 	apiOptionsFile := "apiOptions.yaml"
+
 	err := initialize.Parse(os.Args[2:])
 	if err != nil {
 		return fmt.Errorf("\n invalid subcommand %v", err)
@@ -49,5 +50,6 @@ func handleInit() error {
 		utils.PrintGreen(fmt.Sprintf("Created '%s': %s", apiOptionsFile, utils.CheckMark))
 		utils.PrintGreen("Done " + utils.CheckMark)
 	}
+
 	return nil
 }

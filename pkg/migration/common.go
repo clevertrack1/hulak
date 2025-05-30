@@ -20,10 +20,13 @@ func readJSON(filePath string) (map[string]any, error) {
 	} else if err != nil {
 		return nil, fmt.Errorf("\n error checking file: %w", err)
 	}
+
 	if fileInfo.Size() == 0 {
 		return nil, fmt.Errorf("\n file is empty: %s", filePath)
 	}
+
 	var jsonStrFile map[string]any
+
 	jsonByteVal, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, fmt.Errorf("\n error reading the JSON file: %w", err)
@@ -43,6 +46,7 @@ func sanitizeKey(key string) string {
 	key = strings.ReplaceAll(key, ".", "_")
 	re := regexp.MustCompile(`[^a-zA-Z0-9_]`)
 	key = re.ReplaceAllString(key, "")
+
 	return key
 }
 
@@ -61,6 +65,7 @@ func addDotToTemplate(key string) string {
 		// Extract the content inside {{ }}
 		content := match[2 : len(match)-2]
 		content = sanitizeKey(content)
+
 		return "{{." + content + "}}"
 	})
 
@@ -77,6 +82,7 @@ func createMap(str string) map[string]any {
 	// Unmarshal the cleaned JSON string into the result map
 	if err := json.Unmarshal([]byte(str), &result); err != nil {
 		fmt.Println("Error unmarshaling JSON:", err)
+
 		return nil
 	}
 

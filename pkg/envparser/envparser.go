@@ -36,7 +36,9 @@ func setEnvironment(envFromFlag string) (bool, error) {
 	if err != nil {
 		return fileCreationSkipped, err
 	}
+
 	var envFromFiles []string
+
 	for _, file := range environmentFiles {
 		file = strings.ToLower(file)
 		fileName := strings.ReplaceAll(file, utils.DefaultEnvFileSuffix, "")
@@ -48,11 +50,14 @@ func setEnvironment(envFromFlag string) (bool, error) {
 		fmt.Printf("'%v.env' not found in the env directory\n", envFromFlag)
 		// ask to create the file, if the file does not exist
 		fmt.Printf("Create '%v.env'? (y/n)", envFromFlag)
+
 		reader := bufio.NewReader(os.Stdin)
+
 		responses, err := reader.ReadString('\n')
 		if err != nil {
 			return fileCreationSkipped, utils.ColorError("failed to read responses: %v", err)
 		}
+
 		if strings.TrimSpace(responses) == "y" || strings.TrimSpace(responses) == "Y" {
 			err := CreateDefaultEnvs(&envFromFlag)
 			if err != nil {
@@ -70,9 +75,11 @@ func setEnvironment(envFromFlag string) (bool, error) {
 
 	err = os.Setenv(utils.EnvKey, envFromFlag)
 	utils.PrintGreen("Environment: " + os.Getenv(utils.EnvKey))
+
 	if err != nil {
 		return fileCreationSkipped, err
 	}
+
 	return fileCreationSkipped, nil
 }
 
@@ -84,16 +91,19 @@ func trimQuotes(str string) (string, bool) {
 			return str[1 : len(str)-1], true
 		}
 	}
+
 	return str, false
 }
 
 // LoadEnvVars returns map of the key-value pair from the provided .env filepath
 func LoadEnvVars(filePath string) (map[string]any, error) {
 	hulakEnvironmentVariable := make(map[string]any)
+
 	file, err := os.Open(filePath)
 	if err != nil {
 		return nil, err
 	}
+
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
@@ -118,6 +128,7 @@ func LoadEnvVars(filePath string) (map[string]any, error) {
 			// If there is no "=" or invalid format, skip
 			continue
 		}
+
 		key := strings.TrimSpace(secret[0])
 		val := strings.TrimSpace(secret[1])
 		val, wasTrimmed := trimQuotes(val)
@@ -139,13 +150,16 @@ func inferType(val string, wasTrimmed bool) any {
 		if intValue, err := strconv.Atoi(val); err == nil {
 			return intValue
 		}
+
 		if floatValue, err := strconv.ParseFloat(val, 64); err == nil {
 			return floatValue
 		}
+
 		if boolValue, err := strconv.ParseBool(val); err == nil {
 			return boolValue
 		}
 	}
+
 	return val
 }
 

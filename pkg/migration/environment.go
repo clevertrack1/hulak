@@ -29,6 +29,7 @@ type Environment struct {
 func IsEnv(jsonString map[string]any) bool {
 	_, valuesExists := jsonString["values"]
 	_, pmVarScopeExists := jsonString["_postman_variable_scope"]
+
 	return valuesExists && pmVarScopeExists
 }
 
@@ -86,6 +87,7 @@ func PrepareEnvStruct(jsonStr map[string]any) (Environment, error) {
 
 func migrateEnv(env Environment, comment ...string) error {
 	var message strings.Builder
+
 	commentText := "Postman Env Migration"
 	if len(comment) > 0 && comment[0] != "" {
 		commentText = comment[0]
@@ -100,13 +102,18 @@ func migrateEnv(env Environment, comment ...string) error {
 	for _, eachVarItem := range env.Values {
 		key := sanitizeKey(eachVarItem.Key)
 		keyVal := fmt.Sprintf("%s = %s\n", key, eachVarItem.Value)
+
 		if !eachVarItem.Enabled || eachVarItem.Value == "" {
 			keyVal = fmt.Sprintf("# %s = %s\n", key, eachVarItem.Value)
 		}
+
 		message.WriteString(keyVal)
 	}
+
 	content := message.String()
+
 	var envFileName string
+
 	lowerCased := strings.ToLower(env.Name)
 	if env.Name == "" || lowerCased == "globals" {
 		envFileName = utils.DefaultEnvVal
@@ -132,5 +139,6 @@ func migrateEnv(env Environment, comment ...string) error {
 	}
 
 	utils.PrintGreen("\nEnvironment migration successful! " + utils.CheckMark)
+
 	return nil
 }

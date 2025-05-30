@@ -24,10 +24,12 @@ func InitializeProject(env string) map[string]any {
 	if err := envparser.CreateDefaultEnvs(nil); err != nil {
 		utils.PanicRedAndExit("%v", err)
 	}
+
 	envMap, err := envparser.GenerateSecretsMap(env)
 	if err != nil {
 		panic(err)
 	}
+
 	return envMap
 }
 
@@ -44,23 +46,27 @@ func runTasks(filePathList []string, secretsMap map[string]any, debug bool, fp s
 	}
 
 	var wg sync.WaitGroup
+
 	taskChan := make(chan string, len(filePathList)) // Buffered channel for tasks
 
 	// Fill the task channel with file paths
 	for _, path := range filePathList {
 		taskChan <- path
 	}
+
 	close(taskChan)
 
 	// Create a pool of worker goroutines
 	for i := range maxWorkers {
 		wg.Add(1)
+
 		go func(_ int) {
 			defer wg.Done()
 
 			for path := range taskChan {
 				// Process each task with retry logic
 				success := false
+
 				var lastErr error
 
 				for attempt := 0; attempt < maxRetries && !success; attempt++ {
@@ -93,9 +99,11 @@ func runTasks(filePathList []string, secretsMap map[string]any, debug bool, fp s
 					select {
 					case <-doneChan:
 						success = true
+
 						utils.PrintInfo(fmt.Sprintf("Processed '%s'", filepath.Base(path)))
 					case err := <-errChan:
 						lastErr = err
+
 						utils.PrintInfo(fmt.Sprintf("(attempt %d/%d)", attempt+1, maxRetries))
 					case <-ctx.Done():
 						lastErr = fmt.Errorf("timeout after %v", timeout)
@@ -166,6 +174,7 @@ func HandleAPIRequests(
 	dir, dirseq, fp string,
 ) {
 	var allFiles []string
+
 	var sequentialFiles []string
 
 	// Add existing file paths to the concurrent processing list
@@ -197,6 +206,7 @@ func HandleAPIRequests(
 		if dir != "" || dirseq != "" {
 			utils.PrintInfo(fmt.Sprintf("Processing %d files concurrently...", len(allFiles)))
 		}
+
 		runTasks(allFiles, secretsMap, debug, fp)
 	}
 
@@ -217,12 +227,12 @@ func HandleAPIRequests(
 // processFilesSequentially handles files one by one in a sequential manner
 func processFilesSequentially(filePaths []string, secretsMap map[string]any, debug bool) {
 	for _, path := range filePaths {
-
 		// Create a fresh copy of the environment for each file
 		fileEnv := utils.CopyEnvMap(secretsMap)
 
 		err := processTask(path, fileEnv, debug)
 		utils.PrintInfo(fmt.Sprintf("Processed: '%s'", filepath.Base(path)))
+
 		if err != nil {
 			utils.PrintRed(fmt.Sprintf("Error processing %s: %v", path, err))
 		}

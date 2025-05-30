@@ -26,5 +26,6 @@ func CompareUnorderedStringSlices(expected, actual []string) bool {
 			return false
 		}
 	}
+
 	return true
 }

@@ -42,6 +42,7 @@ func (m HTTPMethodType) IsValid() bool {
 	case GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS, TRACE, CONNECT:
 		return true
 	}
+
 	return false
 }
 
@@ -60,6 +61,7 @@ type URL string
 func (u *URL) IsValidURL() bool {
 	userProvidedURL := string(*u)
 	_, err := url.ParseRequestURI(userProvidedURL)
+
 	return err == nil
 }
 
@@ -85,6 +87,7 @@ func (user *ApiCallFile) IsValid(filePath string) (bool, error) {
 		if user.Method == "" {
 			return false, fmt.Errorf("missing or empty HTTP method in '%s'", filePath)
 		}
+
 		return false, fmt.Errorf("invalid HTTP method '%s' in '%s'", user.Method, filePath)
 	}
 
@@ -100,6 +103,7 @@ func (user *ApiCallFile) IsValid(filePath string) (bool, error) {
 			user.Body,
 		)
 	}
+
 	return true, nil
 }
 
@@ -114,6 +118,7 @@ func (user *ApiCallFile) PrepareStruct() (ApiInfo, error) {
 		if user.Headers == nil {
 			user.Headers = make(map[string]string)
 		}
+
 		user.Headers["content-type"] = contentType
 	}
 
@@ -147,7 +152,9 @@ func (b *Body) IsValid() bool {
 	if b == nil {
 		return true
 	}
+
 	validFieldCount := 0
+
 	ln := reflect.ValueOf(*b)
 	for i := range ln.NumField() {
 		field := ln.Field(i)
@@ -186,6 +193,7 @@ type GraphQl struct {
 // EncodeBody returns body for apiCall, content type header string and error if any
 func (b *Body) EncodeBody() (io.Reader, string, error) {
 	var body io.Reader
+
 	var contentType string
 
 	if b == nil {
@@ -198,6 +206,7 @@ func (b *Body) EncodeBody() (io.Reader, string, error) {
 		if err != nil {
 			return nil, "", utils.ColorError("error encoding GraphQL body", err)
 		}
+
 		body = encodedBody
 
 	case len(b.FormData) > 0:
@@ -205,6 +214,7 @@ func (b *Body) EncodeBody() (io.Reader, string, error) {
 		if err != nil {
 			return nil, "", utils.ColorError("error encoding multipart form data: %w", err)
 		}
+
 		body, contentType = encodedBody, ct
 
 	case len(b.URLEncodedFormData) > 0:
@@ -212,6 +222,7 @@ func (b *Body) EncodeBody() (io.Reader, string, error) {
 		if err != nil {
 			return nil, "", utils.ColorError("error encoding URL-encoded form data: %w", err)
 		}
+
 		body, contentType = encodedBody, "application/x-www-form-urlencoded"
 
 	case b.Raw != "":
@@ -254,6 +265,7 @@ func EncodeFormData(keyValue map[string]string) (io.Reader, string, error) {
 	}
 
 	payload := &bytes.Buffer{}
+
 	writer := multipart.NewWriter(payload)
 	defer writer.Close() // Ensure writer is closed
 
@@ -288,6 +300,7 @@ func EncodeGraphQlBody(query string, variables any) (io.Reader, error) {
 		if err != nil {
 			return nil, fmt.Errorf("error processing variables: %w", err)
 		}
+
 		payload.Variables = processed
 	}
 
@@ -305,6 +318,7 @@ func (b *Body) AddKeyValueToFormData(key, value string) {
 	if b.FormData == nil {
 		b.FormData = make(map[string]string)
 	}
+
 	b.FormData[key] = value
 }
 
@@ -313,6 +327,7 @@ func (b *Body) AddKeyValueToURLEncodedFormData(key, value string) {
 	if b.URLEncodedFormData == nil {
 		b.URLEncodedFormData = make(map[string]string)
 	}
+
 	b.URLEncodedFormData[key] = value
 }
 
@@ -334,25 +349,31 @@ func processVariable(v any) (any, error) {
 	case []any:
 		// Process array elements
 		processed := make([]any, len(val))
+
 		for i, item := range val {
 			p, err := processVariable(item)
 			if err != nil {
 				return nil, err
 			}
+
 			processed[i] = p
 		}
+
 		return processed, nil
 
 	case map[string]any:
 		// Process nested maps
 		processed := make(map[string]any, len(val))
+
 		for k, item := range val {
 			p, err := processVariable(item)
 			if err != nil {
 				return nil, err
 			}
+
 			processed[k] = p
 		}
+
 		return processed, nil
 
 	case json.RawMessage:
@@ -361,6 +382,7 @@ func processVariable(v any) (any, error) {
 		if err := json.Unmarshal(val, &parsed); err != nil {
 			return nil, fmt.Errorf("invalid JSON in variable: %w", err)
 		}
+
 		return processVariable(parsed)
 
 	default:
@@ -374,6 +396,7 @@ func processVariable(v any) (any, error) {
 		if err := json.Unmarshal(jsonData, &processed); err != nil {
 			return nil, fmt.Errorf("failed to process variable type %T: %w", val, err)
 		}
+
 		return processed, nil
 	}
 }

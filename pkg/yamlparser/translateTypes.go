@@ -31,16 +31,21 @@ func stringHasDelimiter(value string) (bool, string) {
 	if len(value) < 4 || !strings.HasPrefix(value, "{{") || !strings.HasSuffix(value, "}}") {
 		return false, ""
 	}
+
 	if strings.Count(value[:3], "{") > 2 || strings.Count(value[len(value)-3:], "}") > 2 {
 		return false, ""
 	}
+
 	content := value[2 : len(value)-2]
 	re := regexp.MustCompile(`^\s+$`)
+
 	onlyHasEmptySpace := re.Match([]byte(value))
 	if len(content) == 0 || onlyHasEmptySpace {
 		return false, ""
 	}
+
 	content = strings.TrimSpace(content)
+
 	return len(content) > 0, content
 }
 
@@ -59,11 +64,13 @@ func delimiterLogicAndCleanup(delimiterString string) action {
 	// Check for DotString action
 	if len(innerStrChunks) == 1 && strings.HasPrefix(innerStrChunks[0], ".") {
 		dotStr := strings.TrimPrefix(innerStrChunks[0], ".")
+
 		return action{Type: DotString, DotString: dotStr}
 	}
 
 	if len(innerStrChunks) == 3 && innerStrChunks[0] == "getValueOf" {
 		cleanedChunks := cleanStrings(innerStrChunks[1:])
+
 		return action{
 			Type:       GetValueOf,
 			GetValueOf: append([]string{innerStrChunks[0]}, cleanedChunks...),
@@ -103,6 +110,7 @@ func findPathFromMap(
 		if parentKey != "" {
 			currentKey = parentKey + " -> " + bKey
 		}
+
 		switch bTypeVal := bValue.(type) {
 		case string:
 			action := delimiterLogicAndCleanup(bTypeVal)
@@ -178,6 +186,7 @@ func setValueOnAfterMap(
 				if val, ok := currentMap[val].(string); ok {
 					replaceWith = swapValue(val, replaceWith)
 				}
+
 				currentMap[val] = replaceWith
 			} else {
 				// Traverse deeper into the map
@@ -190,6 +199,7 @@ func setValueOnAfterMap(
 				if val, ok := currentSlice[val].(string); ok {
 					replaceWith = swapValue(val, replaceWith)
 				}
+
 				currentSlice[val] = replaceWith
 			} else {
 				// Traverse deeper into the slice
@@ -215,6 +225,7 @@ func translateType(
 		if err != nil {
 			return nil, utils.ColorError("#TranslateType ", err)
 		}
+
 		if len(path) == 0 {
 			continue
 		}
@@ -223,6 +234,7 @@ func translateType(
 		if !exists {
 			continue
 		}
+
 		afterMap = setValueOnAfterMap(path, afterMap, secretVal)
 	}
 
@@ -236,6 +248,7 @@ func translateType(
 		if len(path) == 0 {
 			continue
 		}
+
 		compareVal := getValueOf(getValueOfActionObj.KeyName, getValueOfActionObj.FileName)
 		afterMap = setValueOnAfterMap(path, afterMap, compareVal)
 	}
@@ -250,6 +263,7 @@ func swapValue(val1 string, val2 any) any {
 	if val1 == str {
 		return val2
 	}
+
 	return val1
 }
 
@@ -260,6 +274,7 @@ func cleanStrings(stringsToClean []string) []string {
 	for i, str := range stringsToClean {
 		cleaned[i] = strings.NewReplacer(`"`, "", "`", "", "'", "").Replace(str)
 	}
+
 	return cleaned
 }
 
@@ -277,8 +292,10 @@ func parsePath(path string) ([]any, error) {
 		trimmedKey := strings.TrimSpace(segment)
 		if trimmedKey == "" {
 			msg := fmt.Sprintf("Invalid format: empty key at position %d", i+1)
+
 			return nil, utils.ColorError(msg)
 		}
+
 		isArrayKey, keyPart, index := utils.ParseArrayKey(trimmedKey)
 		if isArrayKey {
 			keys = append(keys, keyPart)
@@ -287,5 +304,6 @@ func parsePath(path string) ([]any, error) {
 			keys = append(keys, trimmedKey)
 		}
 	}
+
 	return keys, nil
 }
