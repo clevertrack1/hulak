@@ -1,7 +1,8 @@
-<p align="center">
+<div align="center">
   <img alt="Hulak Logo" src="./assets/logo.svg" height="140" />
-  <p align="center">File based API client for terminal nerds.</p>
-</p>
+<br/>
+  File based API client for terminal nerds.
+</div>
 
 # Elevator Pitch
 
@@ -193,7 +194,7 @@ Read more about response in [response documentation](./docs/response.md).
 ## Flags
 
 | Flag      | Description                                                                                                                                                                                                                                                                                                                                                            | Usage                            |
-| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------|
 | `-env`    | Specify the environment file you want to use for Api Call. If the user flag is absent, it defaults to `global`.                                                                                                                                                                                                                                                        | `-env prod`                      |
 | `-fp`     | Represents file-path for the file/directory you want to run.                                                                                                                                                                                                                                                                                                           | -fp "./collection/getUsers.yaml" |
 | `-f`      | File name (yaml/yml) to run. Hulak searches your directories and subdirectories from the root and finds the matching yaml file(s). If multiple matches are found, they run concurrently                                                                                                                                                                                | `-f graphql`                     |
@@ -204,7 +205,7 @@ Read more about response in [response documentation](./docs/response.md).
 ## Subcommands
 
 | Subcommand | Description                                                              | Usage                                                               |
-| ---------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------- |
+|------------|--------------------------------------------------------------------------|---------------------------------------------------------------------|
 | help       | display help message                                                     | `hulak help`                                                        |
 | init       | Initialize environment directory and files in it                         | `hulak init` or ` hulak init -env global prod staging`              |
 | migrate    | migrates postman environment and collection (v2.1 only) files for hulak. | `hulak migrate "path/to/environment.json" "path/to/collection.json` |
